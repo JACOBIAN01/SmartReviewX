@@ -1,17 +1,33 @@
-from flask import Flask , jsonify , render_template
-from Review_Automation import  Start_Project_Review
+import eventlet
+eventlet.monkey_patch()
+from flask import Flask ,render_template
+from Review_Automation import  Start_Project_Review ,Cancel
+from flask_socketio import SocketIO,emit
 
 
 app = Flask(__name__,template_folder="templates")
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 @app.route("/")
 def home():
     return render_template("index.html")
+ 
+@socketio.on("Cancel_Review")
+def Handle_Cancel():
+    Cancel()
+    socketio.emit("review_update", "⚠️ Review process was cancelled.")
 
-@app.route("/run-review",methods=['GET'])
-def Run_Review():
-    return jsonify({"Status":Start_Project_Review()})
+@socketio.on('start_review')
+def handle_review():
+    def send_update(msg):
+        socketio.emit("review_update",msg)
 
+    try:
+        socketio.start_background_task(Start_Project_Review, log_callback=send_update)
+    except Exception as e:
+        socketio.emit("review_update", f"❌ Error occurred: {str(e)}")
 
 if __name__ =='__main__':
-    app.run(host='0.0.0.0',port=5000)
+    print("http://localhost:5000/")
+    socketio.run(app, host='0.0.0.0', port=5000)

@@ -7,12 +7,15 @@ import time
 from dotenv import load_dotenv
 import os
 import random
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+import time
 load_dotenv()
 Phone = os.getenv("PHONE")
 Password = os.getenv("PASSWORD")
 
 
-def Login(driver,wait):
+def Login(driver,wait,log_callback):
     try:
         driver.get("https://www.codingal.com/")
         time.sleep(1)
@@ -34,10 +37,11 @@ def Login(driver,wait):
         login_btn_2.click()
         time.sleep(2)  # Click to activate it
     except Exception as e:
-        print(f"Error During Login: {e}")
+        Update(f"Error During Login:",log_callback)
+        print(f"Error During Login:{e}")
 
 
-def Pending_Project_Count(driver,wait):
+def Pending_Project_Count(driver,wait,log_callback=None):
     # Step 5: Navigate to Dashboard Project
     driver.get("https://www.codingal.com/teacher/dashboard/projects/")
     try:
@@ -47,9 +51,9 @@ def Pending_Project_Count(driver,wait):
         Pending_project = int(project_number.text)
         return Pending_project
     except Exception as e:
+        Update(f"Could not find project count, assuming 0",log_callback)
         print(f"Could not find project count, assuming 0. Error{e}")
         return 0
-
 
 def Generate_Review(name,lesson):
     try:
@@ -57,25 +61,25 @@ def Generate_Review(name,lesson):
             f"Congratulations {name} on completing {lesson}!",
             f"Awesome job on finishing {lesson}, {name}!",
             f"Well done {name} for submitting your {lesson} project!",
-            f"{name}, great effort on your {lesson} work!",
+            f" {name}, great effort on your {lesson} work!",
             f"You did it, {name}! {lesson} is complete!"
         ]
 
         compliments = [
             f"{name}, your creativity really shines through in the {lesson} project.",
             f"I can see the effort and thought you've put into {lesson}, {name}.",
-            f"{name}, you're developing some solid skills through your work on {lesson}.",
+            f" {name}, you're developing some solid skills through your work on {lesson}.",
             f"You're getting better with every project, and {lesson} is a great example of that, {name}.",
             f"Your {lesson} submission reflects clear understanding and imagination, {name}.",
-            f"{name}, this {lesson} project shows great progress from your previous submissions.",
+            f" {name}, this {lesson} project shows great progress from your previous submissions.",
             f"Impressive attention to detail in your {lesson} project, {name}.",
-            f"{name}, your approach to solving challenges in {lesson} is evolving beautifully."
+            f" {name}, your approach to solving challenges in {lesson} is evolving beautifully."
         ]
 
         encouragements = [
-            f"Keep up the amazing work! {name}",
+            f"Keep up the amazing work! {name} ",
             f"You're on the right path {name} — stay consistent!",
-            f"Proud of your progress{name}. Keep going!",
+            f"Proud of your progress {name} . Keep going!",
             "Excited to see what you'll do next!",
             f"Keep pushing your limits {name} — you're doing great!",
             "Keep challenging yourself — the sky's the limit!"
@@ -91,11 +95,11 @@ def Generate_Review(name,lesson):
 
     except Exception as e:
         print(f"Error in Review Generation:{e}")
-        Review_text = f"Congratulations {name} on completing {lesson}! Your dedication and effort are commendable. Your work showcases creativity and skill. Keep up the excellent work! Your achievements demonstrate your potential and promise for future success. Well done {name}!"
+        Review_text = f"Congratulations {name} on completing {lesson} ! Your dedication and effort are commendable. Your work showcases creativity and skill. Keep up the excellent work! Your achievements demonstrate your potential and promise for future success. Well done {name}!"
         return Review_text
 
 
-def Review_Project(driver,wait):
+def Review_Project(driver,wait,log_callback=None):
     try:
         element = wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Review now')])[1]")))
         driver.execute_script("arguments[0].scrollIntoView(true);", element)
@@ -106,12 +110,11 @@ def Review_Project(driver,wait):
         Student_Name_element = wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Submitted by')]/preceding-sibling::p")))
         Student_Name = Student_Name_element.text  # Output: Student Name
         #Find Lesson Name
-        # Lesson_Name_element = driver.find_element(By.XPATH, "//p[contains(text(), 'Lesson')]")
         Lesson_Name_element = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Lesson')]"))
         )
         Lesson_Name = Lesson_Name_element.text
-        print(f"Reviewing project for {Student_Name} - {Lesson_Name}") 
+        # Update(f"Reviewing project for {Student_Name} - {Lesson_Name}",log_callback)
         #Review Now Button
         review_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Review now')]")))
         review_btn.click()
@@ -125,7 +128,7 @@ def Review_Project(driver,wait):
         try:
             enhance_button = wait.until(EC.element_to_be_clickable((By.XPATH,"//button[.//span[text()='Enhance with AI']]")))
             enhance_button.click()
-            time.sleep(2)
+            time.sleep(3)
         except Exception as e:
             pass
         #Give Star
@@ -136,28 +139,55 @@ def Review_Project(driver,wait):
         review_project = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit review')]")))
         #Submit Button Click
         review_project.click()  
+        Update(f"Review completed successfully for {Student_Name}.",log_callback)
+        time.sleep(1)
         back_to_Project = wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Back to projects')])")))
         back_to_Project.click()
-        print(f"Review completed successfully for {Student_Name}.")
     except Exception as e:
-        print(f"Error during review: {e}")
+        Update(f"Error during review",log_callback)
+        print(f"Error during review {e}")
+
+
+def Update(message,log_callback=None):
+    print(message)
+    if log_callback:
+        log_callback(message)
+
+
+Review_Cancel = False
+
+def Cancel():
+    global Review_Cancel
+    Review_Cancel = True
+
 
 #Main Execution
-def Start_Project_Review():
-    driver = webdriver.Chrome()
+def Start_Project_Review(log_callback = None):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless=new")  # use 'new' for newer Chrome versions
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(options=chrome_options)
     wait = WebDriverWait(driver, 10)
-    Login(driver,wait)
+    Login(driver,wait,log_callback)
+    global Review_Cancel
+    Review_Cancel = False 
     while True:
-        Pending_projects = Pending_Project_Count(driver,wait)
+        Pending_projects = Pending_Project_Count(driver,wait,log_callback)
         if Pending_projects == 0:
-            print("No pending projects to review.")
-            print(" All project reviews completed.")
+            Update("All Projects review Completed.",log_callback)
+            break
+        if Review_Cancel :
             break
         try:
-            Review_Project(driver,wait)
-            time.sleep(1)
+            Review_Project(driver,wait,log_callback)
+            time.sleep(2)
         except Exception as e:
-            print(f"Error reviewing a project: {e}")
+            Update(f"Error Inside Start_Review_Projct",log_callback)
+            print(f"Error Inside Start_Review_Projct{e}")
             continue
     driver.quit()
+
 

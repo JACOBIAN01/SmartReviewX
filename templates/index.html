@@ -1,64 +1,119 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ReviewX</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
-<body class="bg-gradient-to-r from-[#FFE0C3] to-[#FFB6A3]">
+  </head>
+  <body class="bg-gradient-to-r from-[#FFE0C3] to-[#FFB6A3]">
+    <!-- Toast Notification -->
+    <div
+      id="toast"
+      class="fixed top-15 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white px-6 py-2 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-500 z-50"
+    ></div>
 
-    <div>
+    <div class="min-h-screen flex justify-center items-center gap-10 m-5">
+      <!-- Content -->
+      <div
+        class="bg-gradient-to-tr from-orange-600 via-orange-300 to-orange-600 flex justify-center text-center h-96 w-96 rounded-3xl border-2 border-red-400 p-3"
+      >
+        <div>
+          <h1 class="text-2xl font-bold m-2">
+            AI-Powered Review for Codingal Projects
+          </h1>
+          <h3 class="font-semibold m-5">
+            Automate project reviews with one smart click. Seamless. Fast.
+            Reliable.
+          </h3>
+          <input
+            class="bg-white rounded-3xl text-center border-red-500 border-2 w-80 h-10 font-bold m-2"
+            type="email"
+            placeholder="Enter Registered Email"
+          />
+          <br />
+          <input
+            class="bg-white rounded-3xl text-center border-red-500 border-2 w-80 h-10 font-bold m-2"
+            type="password"
+            placeholder="Enter password"
+          />
+          <br />
+          <div class="flex justify-center items-center gap-3">
+            <button
+              id="Cancel"
+              onclick="Cancel()"
+              class="m-5 bg-orange-700 text-white px-4 py-3 rounded-3xl border-2 border-white font-bold hover:text-orange-700 hover:bg-white hover:border-orange-700"
+            >
+              Cancel
+            </button>
+            <button
+              id="StartReviewButton"
+              class="m-5 bg-orange-700 text-white px-4 py-3 rounded-3xl border-2 border-white font-bold hover:text-orange-700 hover:bg-white hover:border-orange-700"
+            >
+              Review Project
+            </button>
+          </div>
+        </div>
+      </div>
 
-        <!-- Notification -->
-        <div id="notification" class="bg-cyan-200 h-10 w-80 flex items-center justify-center m-auto mt-15 font-bold border-2 border-cyan-500 rounded-3xl">Notification</div>
-
- 
-        <!-- Content -->
-         <div class="bg-orange-300 flex justify-center text-center mt-30 h-60 w-120 m-auto rounded-3xl border-2 border-red-400">  
-           <div>
-            <h1 class="text-2xl font-bold m-2">AI-Powered Review for Codingal Projects</h1>
-            <h3 class="font-semibold m-5">Automate project reviews with one smart click. Seamless. Fast Reliable.</h3>
-            <input class="bg-gray-200" type="email" placeholder="Enter Registered Email">
-            <br>
-            <input type="password" placeholder="Enter password">
-            <br>
-            <button 
-            onclick="StartReviewBot()"
-            class="bg-orange-700 text-white px-4 py-3 rounded-3xl border-2 border-white font-bold hover:text-orange-700 hover:bg-white hover:border-orange-700">Review Project</button>
-            </div>
-         </div>
-
-
-         <div>
-            <div id="status" class="bg-cyan-200 w-100 flex items-center justify-center m-auto mt-15 font-bold border-2 border-cyan-500 rounded-3xl">Review Status</div>
-         </div>
-        
+      <!-- Notification -->
+      <div
+        id="notification"
+        class="bg-cyan-200 w-96 h-96 font-bold border-2 border-cyan-500 rounded-3xl overflow-y-auto p-3 space-y-2 shadow-md"
+      >
+        <p
+          id="notif-head"
+          class="text-center text-xl font-semibold text-cyan-100 bg-cyan-950 p-2 rounded-3xl shadow"
+        >
+          Notification
+        </p>
+        <div id="notif-messages" class="space-y-1"></div>
+      </div>
     </div>
 
-
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
+      const toast = document.getElementById("toast");
 
-        function StartReviewBot(){
-            var status = document.getElementById("status");
-            status.innerHTML ="<p>Review in progress...</p>";
-            var text1 = document.createElement("h3");
-            fetch("/run-review")
-            .then(response=>response.json())
-            .then(data => {
-                status.innerHTML = "";
-                const logs = data.Status.split("<br>");
-                logs.forEach(line=>{
-                    const p = document.createElement("p");
-                    p.textContent = line;
-                    status.appendChild(p)
-                });
-            });
-        }
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("pointer-events-auto", "opacity-100");
+        toast.classList.remove("opacity-0");
 
+        setTimeout(() => {
+          toast.classList.add("opacity-0");
+          toast.classList.remove("opacity-100", "pointer-events-auto");
+        }, 1000);
+      }
+
+      const socket = io();
+
+      const btn = document.getElementById("StartReviewButton");
+      btn.addEventListener("click", () => {
+        socket.emit("start_review");
+        const head = document.getElementById("notif-head");
+        head.textContent = "🚀 Starting project review...";
+      });
+
+
+      socket.on("review_update", (msg) => {
+        const notif = document.getElementById("notif-messages");
+        const p = document.createElement("p");
+        p.textContent = `🔔 ${msg}`;
+        p.className =
+          "font-semibold bg-cyan-300 p-2 rounded-xl shadow-sm shadow-black m-2";
+        notif.appendChild(p);
+        notif.scrollTop = notif.scrollHeight;
+        showToast(msg);
+      });
+
+      function Cancel() {
+        socket.emit("Cancel_Review");
+        const head = document.getElementById("notif-head");
+        head.className =
+          "text-center text-xl font-semibold text-cyan-100 bg-cyan-950 p-2 rounded-3xl shadow";
+        head.textContent = "❌ Review cancelled by user.";
+      }
     </script>
-  
-</body>
+  </body>
 </html>
