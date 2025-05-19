@@ -11,19 +11,21 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 import time
 load_dotenv()
-Phone = os.getenv("PHONE")
-Password = os.getenv("PASSWORD")
+# Phone = os.getenv("PHONE")
+# Password = os.getenv("PASSWORD")
 
 
-def Login(driver,wait,log_callback):
+def Login(email,password,driver,wait,log_callback):
     try:
+        UserID = os.getenv("PHONE") or email
+        Password = os.getenv("PASSWORD") or password
         driver.get("https://www.codingal.com/")
         time.sleep(1)
         login_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Login']")))
         login_button.click()
         time.sleep(0.5)
         phone_input = wait.until(EC.presence_of_element_located((By.NAME, "phone")))
-        phone_input.send_keys(Phone)
+        phone_input.send_keys(UserID)
         time.sleep(0.5)
         #Click "Login with Password" Button
         login_btn_1 = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]")))
@@ -162,16 +164,16 @@ def Cancel():
 
 
 #Main Execution
-def Start_Project_Review(log_callback = None):
+def Start_Project_Review(email,password,log_callback = None):
     chrome_options = Options()
-    chrome_options.add_argument("--headless=new")  # use 'new' for newer Chrome versions
+    chrome_options.add_argument("--headless=new")  
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=chrome_options)
     wait = WebDriverWait(driver, 10)
-    Login(driver,wait,log_callback)
+    Login(email,password,driver,wait,log_callback)
     global Review_Cancel
     Review_Cancel = False 
     while True:
