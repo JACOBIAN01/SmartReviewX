@@ -15,10 +15,10 @@ load_dotenv()
 # Password = os.getenv("PASSWORD")
 
 
-def Login(email,password,driver,wait,log_callback):
+def Login(number,password,driver,wait,log_callback):
     try:
-        UserID = os.getenv("PHONE") or email
-        Password = os.getenv("PASSWORD") or password
+        UserID = number 
+        Password = password 
         driver.get("https://www.codingal.com/")
         time.sleep(1)
         login_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Login']")))
@@ -37,7 +37,14 @@ def Login(email,password,driver,wait,log_callback):
         time.sleep(0.5)
         login_btn_2 = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]")))
         login_btn_2.click()
-        time.sleep(2)  # Click to activate it
+        time.sleep(5)  #Time Required to fetch User Name and Image
+        ProfilePic = wait.until(EC.presence_of_element_located((By.XPATH, "//img[@alt='Profile Image']"))) 
+        TeacherNameElement = wait.until(
+    EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'flex-col')]/h2"))
+)
+        TeacherName = TeacherNameElement.text
+        ProfilePicSource = ProfilePic.get_attribute("src")
+        UserDetails(ProfilePicSource,TeacherName)
     except Exception as e:
         Update(f"Error During Login:",log_callback)
         print(f"Error During Login:{e}")
@@ -150,30 +157,37 @@ def Review_Project(driver,wait,log_callback=None):
         print(f"Error during review {e}")
 
 
+Review_Cancel = False
+UserData =[]
+
 def Update(message,log_callback=None):
     print(message)
     if log_callback:
         log_callback(message)
 
-
-Review_Cancel = False
-
 def Cancel():
     global Review_Cancel
     Review_Cancel = True
 
+def StoreUserDetails(src,name):
+    global UserData
+    UserData.append(src)
+    UserData.append(name)
+
+def GetUserDetails():
+    return UserData
 
 #Main Execution
-def Start_Project_Review(email,password,log_callback = None):
+def Start_Project_Review(number,password,log_callback = None):
     chrome_options = Options()
-    chrome_options.add_argument("--headless=new")  
+    # chrome_options.add_argument("--headless=new")  
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=chrome_options)
     wait = WebDriverWait(driver, 10)
-    Login(email,password,driver,wait,log_callback)
+    Login(number,password,driver,wait,log_callback)
     global Review_Cancel
     Review_Cancel = False 
     while True:
@@ -191,5 +205,4 @@ def Start_Project_Review(email,password,log_callback = None):
             print(f"Error Inside Start_Review_Projct{e}")
             continue
     driver.quit()
-
 

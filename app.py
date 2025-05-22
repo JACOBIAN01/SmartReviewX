@@ -1,7 +1,7 @@
 import eventlet
 eventlet.monkey_patch()
 from flask import Flask ,render_template
-from Review_Automation import  Start_Project_Review ,Cancel
+from Review_Automation import  Start_Project_Review ,Cancel ,GetUserDetails
 from flask_socketio import SocketIO,emit
 
 
@@ -18,21 +18,25 @@ def Handle_Cancel():
     Cancel()
     socketio.emit("review_update", "⚠️ Review process was cancelled.")
 
+@socketio.on("GetDetails")
+def Get_User_Details():
+    GetUserDetails()
+    
+
 
 @socketio.on('start_review')
 def handle_review(data):
 
-    email = data.get("email")
+    number = data.get("number")
     password = data.get("password")
 
     def send_update(msg):
-        socketio.emit("review_update",msg)
+        socketio.emit("review_update",msg,broadcast=True)
 
     try:
-        socketio.start_background_task(Start_Project_Review,email,password, log_callback=send_update)
+        socketio.start_background_task(Start_Project_Review,number,password, log_callback=send_update)
     except Exception as e:
         socketio.emit("review_update", f"❌ Error occurred: {str(e)}")
 
 if __name__ =='__main__':
-    print("http://localhost:5000/")
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5000,debug=True)

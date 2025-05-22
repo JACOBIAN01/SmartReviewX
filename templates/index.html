@@ -14,6 +14,16 @@
     ></div>
 
     <div class="min-h-screen flex justify-center items-center gap-10 m-5">
+      <!-- Profile -->
+      <div
+        class="bg-gradient-to-r from-cyan-300 via-cyan-200 to-cyan-300 h-96 w-96 rounded-3xl border-2 border-blue-500 p-3 text-center"
+      >
+       <img id="UserImage" class=" mx-auto h-25 w-25 rounded-full border-2 border-white" src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740" alt="Profile Picture">
+       <p class="bg-cyan-500 border-2 border-white rounded-3xl w-full mt-5 mb-5 text-2xl font-bold text-black p-2" id="UserName"></p>
+       <p class="font-semibold text-xl mt-2 mb-2">Pending Projects</p>
+       <p id="project-count"class= "mb-2 mt-3 bg-cyan-800 text-white font-bold h-13 w-25 mx-auto flex items-center justify-center rounded-full text-3xl"></p>
+      </div>
+
       <!-- Content -->
       <div
         class="bg-gradient-to-tr from-orange-600 via-orange-300 to-orange-600 flex justify-center text-center h-96 w-96 rounded-3xl border-2 border-red-400 p-3"
@@ -26,12 +36,12 @@
             Automate project reviews with one smart click. Seamless. Fast.
             Reliable.
           </h3>
-          <!-- Email -->
+          <!-- Phone Number -->
           <input
             class="bg-white rounded-3xl text-center border-red-500 border-2 w-80 h-10 font-bold m-2"
-            type="email"
-            id="email"
-            placeholder="Enter Registered Email"
+            type="number"
+            id="number"
+            placeholder="Enter Phone Number"
           />
           <br />
           <!-- Password -->
@@ -46,8 +56,7 @@
           <br />
           <div class="flex justify-center items-center gap-3">
             <button
-              id="Cancel"
-              onclick="Cancel()"
+              id="Cancel_Button"
               class="m-5 bg-orange-700 text-white px-4 py-3 rounded-3xl border-2 border-white font-bold hover:text-orange-700 hover:bg-white hover:border-orange-700"
             >
               Cancel
@@ -80,8 +89,16 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
     <script>
+      //Attributes
       const toast = document.getElementById("toast");
+      const socket = io();
+      const Review_btn = document.getElementById("StartReviewButton");
+      const Cancel_btn = document.getElementById("Cancel_Button");
+      const UserImage = document.getElementById("UserImage")
+      const UserName = document.getElementById("UserName")
+      const ProjectCount = document.getElementById("project-count")
 
+      // Toast Notification
       function showToast(message) {
         toast.textContent = message;
         toast.classList.add("pointer-events-auto", "opacity-100");
@@ -93,17 +110,20 @@
         }, 1000);
       }
 
-      const socket = io();
+      //Review Code
+      Review_btn.addEventListener("click", () => {
+        const number = document.getElementById("number").value;
+        const password = document.getElementById("password").value;
 
-      const btn = document.getElementById("StartReviewButton");
-      btn.addEventListener("click", () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        
-        socket.emit("start_review",{email,password});
-        
+        if (!number || !password) {
+          showToast("⚠️ Please fill in both fields.");
+          return;
+        }
+
+        socket.emit("start_review", { number, password });
+
         const head = document.getElementById("notif-head");
-        head.textContent = "🚀 Starting project review...";
+        head.className = head.textContent = "🚀 Starting project review...";
       });
 
       socket.on("review_update", (msg) => {
@@ -117,13 +137,14 @@
         showToast(msg);
       });
 
-      function Cancel() {
+      //Cancel Code
+      Cancel_btn.addEventListener("click", () => {
         socket.emit("Cancel_Review");
         const head = document.getElementById("notif-head");
         head.className =
           "text-center text-xl font-semibold text-cyan-100 bg-cyan-950 p-2 rounded-3xl shadow";
         head.textContent = "❌ Review cancelled by user.";
-      }
+      });
     </script>
   </body>
 </html>
