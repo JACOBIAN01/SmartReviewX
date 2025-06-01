@@ -18,10 +18,11 @@ def Handle_Cancel():
     Cancel()
     socketio.emit("review_update", "⚠️ Review process was cancelled.")
 
-@socketio.on("GetDetails")
-def Get_User_Details():
-    GetUserDetails()
-    
+
+@socketio.on("UserDetailsSocket")
+def Handle_User_Details():
+    Data = GetUserDetails()
+    socketio.emit("User_Details",Data)
 
 
 @socketio.on('start_review')
@@ -31,7 +32,7 @@ def handle_review(data):
     password = data.get("password")
 
     def send_update(msg):
-        socketio.emit("review_update",msg,broadcast=True)
+        socketio.emit("review_update",msg)
 
     try:
         socketio.start_background_task(Start_Project_Review,number,password, log_callback=send_update)
@@ -39,4 +40,5 @@ def handle_review(data):
         socketio.emit("review_update", f"❌ Error occurred: {str(e)}")
 
 if __name__ =='__main__':
-    socketio.run(app, host='0.0.0.0', port=5000,debug=True)
+    print("http://127.0.0.1:5000/")
+    socketio.run(app, host='127.0.0.1', port=5000,debug=False)

@@ -8,12 +8,7 @@ from dotenv import load_dotenv
 import os
 import random
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-import time
 load_dotenv()
-# Phone = os.getenv("PHONE")
-# Password = os.getenv("PASSWORD")
-
 
 def Login(number,password,driver,wait,log_callback):
     try:
@@ -39,15 +34,18 @@ def Login(number,password,driver,wait,log_callback):
         login_btn_2.click()
         time.sleep(5)  #Time Required to fetch User Name and Image
         ProfilePic = wait.until(EC.presence_of_element_located((By.XPATH, "//img[@alt='Profile Image']"))) 
+        time.sleep(2)
         TeacherNameElement = wait.until(
     EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'flex-col')]/h2"))
 )
         TeacherName = TeacherNameElement.text
         ProfilePicSource = ProfilePic.get_attribute("src")
-        UserDetails(ProfilePicSource,TeacherName)
+        time.sleep(2)
+        StoreUserDetails(ProfilePicSource,TeacherName)
+        time.sleep(2)
+        Update("Successfully Logged In",log_callback)
     except Exception as e:
         Update(f"Error During Login:",log_callback)
-        print(f"Error During Login:{e}")
 
 
 def Pending_Project_Count(driver,wait,log_callback=None):
@@ -58,10 +56,10 @@ def Pending_Project_Count(driver,wait,log_callback=None):
         project_number = wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(@class, 'font-600') and contains(@class, 'text-lg') and contains(@class, 'text-yellow-200')]")))
         # project_number = driver.find_element(By.XPATH, "//p[contains(@class, 'font-600') and contains(@class, 'text-lg') and contains(@class, 'text-yellow-200')]")
         Pending_project = int(project_number.text)
+        Update(f"You Have {Pending_project} Projects left for Review !")
         return Pending_project
     except Exception as e:
         Update(f"Could not find project count, assuming 0",log_callback)
-        print(f"Could not find project count, assuming 0. Error{e}")
         return 0
 
 def Generate_Review(name,lesson):
@@ -99,11 +97,8 @@ def Generate_Review(name,lesson):
             f"{random.choice(compliments)} {random.choice(compliments)} "
             f"{random.choice(encouragements)} {random.choice(encouragements)} "
         )
-
         return review_text
-
     except Exception as e:
-        print(f"Error in Review Generation:{e}")
         Review_text = f"Congratulations {name} on completing {lesson} ! Your dedication and effort are commendable. Your work showcases creativity and skill. Keep up the excellent work! Your achievements demonstrate your potential and promise for future success. Well done {name}!"
         return Review_text
 
@@ -158,7 +153,10 @@ def Review_Project(driver,wait,log_callback=None):
 
 
 Review_Cancel = False
-UserData =[]
+UserData ={
+    "Picture":"",
+    "Name":"",
+}
 
 def Update(message,log_callback=None):
     print(message)
@@ -171,16 +169,17 @@ def Cancel():
 
 def StoreUserDetails(src,name):
     global UserData
-    UserData.append(src)
-    UserData.append(name)
+    UserData["Name"] = name
+    UserData["Picture"] = src
 
 def GetUserDetails():
+    print("Userdata inside Review AUto Mation ",UserData)
     return UserData
 
 #Main Execution
 def Start_Project_Review(number,password,log_callback = None):
     chrome_options = Options()
-    # chrome_options.add_argument("--headless=new")  
+    chrome_options.add_argument("--headless=new")  
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--window-size=1920,1080")
@@ -199,10 +198,9 @@ def Start_Project_Review(number,password,log_callback = None):
             break
         try:
             Review_Project(driver,wait,log_callback)
-            time.sleep(2)
+            time.sleep(3)
         except Exception as e:
-            Update(f"Error Inside Start_Review_Projct",log_callback)
-            print(f"Error Inside Start_Review_Projct{e}")
+            Update(f"Error Inside Start_Review_Projct. Moving Forward !",log_callback)
             continue
     driver.quit()
 
