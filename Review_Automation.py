@@ -4,14 +4,13 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-from dotenv import load_dotenv
-import os
 import random
 from selenium.webdriver.chrome.options import Options
-load_dotenv()
+
 
 def Login(number,password,driver,wait,log_callback):
     try:
+        Update("Opening Your Dashboard",log_callback)
         UserID = number 
         Password = password 
         driver.get("https://www.codingal.com/")
@@ -37,14 +36,16 @@ def Login(number,password,driver,wait,log_callback):
         time.sleep(2)
         TeacherNameElement = wait.until(
     EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'flex-col')]/h2"))
-)
+)       
         TeacherName = TeacherNameElement.text
+        time.sleep(2)
         ProfilePicSource = ProfilePic.get_attribute("src")
         time.sleep(2)
         StoreUserDetails(ProfilePicSource,TeacherName)
-        time.sleep(2)
-        Update("Successfully Logged In",log_callback)
+        time.sleep(1)
+        Update(f"Login Succesfull! Hello {TeacherName}",log_callback)
     except Exception as e:
+        print(f"Error During Login:{e}")
         Update(f"Error During Login:",log_callback)
 
 
@@ -56,7 +57,6 @@ def Pending_Project_Count(driver,wait,log_callback=None):
         project_number = wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(@class, 'font-600') and contains(@class, 'text-lg') and contains(@class, 'text-yellow-200')]")))
         # project_number = driver.find_element(By.XPATH, "//p[contains(@class, 'font-600') and contains(@class, 'text-lg') and contains(@class, 'text-yellow-200')]")
         Pending_project = int(project_number.text)
-        Update(f"You Have {Pending_project} Projects left for Review !")
         return Pending_project
     except Exception as e:
         Update(f"Could not find project count, assuming 0",log_callback)
@@ -105,6 +105,7 @@ def Generate_Review(name,lesson):
 
 def Review_Project(driver,wait,log_callback=None):
     try:
+        time.sleep(1.5)
         element = wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Review now')])[1]")))
         driver.execute_script("arguments[0].scrollIntoView(true);", element)
         time.sleep(1)  # Allow time for scrolling
@@ -147,16 +148,20 @@ def Review_Project(driver,wait,log_callback=None):
         time.sleep(1)
         back_to_Project = wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Back to projects')])")))
         back_to_Project.click()
+        time.sleep(1)
     except Exception as e:
         Update(f"Error during review",log_callback)
         print(f"Error during review {e}")
 
 
 Review_Cancel = False
-UserData ={
-    "Picture":"",
-    "Name":"",
-}
+UserData ={}
+Project_Count = None
+
+def  Project_Count_Update():
+    global Project_Count
+    return Project_Count
+
 
 def Update(message,log_callback=None):
     print(message)
@@ -173,8 +178,8 @@ def StoreUserDetails(src,name):
     UserData["Picture"] = src
 
 def GetUserDetails():
-    print("Userdata inside Review AUto Mation ",UserData)
     return UserData
+
 
 #Main Execution
 def Start_Project_Review(number,password,log_callback = None):
@@ -191,6 +196,8 @@ def Start_Project_Review(number,password,log_callback = None):
     Review_Cancel = False 
     while True:
         Pending_projects = Pending_Project_Count(driver,wait,log_callback)
+        global Project_Count
+        Project_Count = Pending_projects
         if Pending_projects == 0:
             Update("All Projects review Completed.",log_callback)
             break

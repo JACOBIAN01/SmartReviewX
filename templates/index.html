@@ -2,105 +2,138 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ReviewX</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="icon" type="image/png" href="./Logo.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gradient-to-r from-[#FFE0C3] to-[#FFB6A3]">
+
+  <body class="bg-gradient-to-r from-[#FFE0C3] to-[#FFB6A3] overflow-hidden">
+
     <!-- Toast Notification -->
     <div
       id="toast"
-      class="fixed top-15 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white px-6 py-2 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-500 z-50"
+      class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-orange-700 text-white px-6 py-2 rounded-md shadow-md opacity-0 pointer-events-none transition-opacity duration-300 z-50 text-lg font-medium"
     ></div>
 
     <div class="min-h-screen flex justify-center items-center gap-10 m-5">
+
       <!-- Profile -->
-      <div
-        class="bg-gradient-to-r from-cyan-300 via-cyan-200 to-cyan-300 h-96 w-96 rounded-3xl border-2 border-blue-500 p-3 text-center"
+      <section
+        class="bg-white rounded-lg border border-cyan-300 w-96 h-96 p-6 flex flex-col items-center shadow-sm"
       >
         <img
           id="UserImage"
-          class="mx-auto h-25 w-25 rounded-full border-2 border-white"
-          src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740"
-          alt="Profile Picture"
+          class="h-24 w-24 rounded-full border-2 border-cyan-400 object-cover"
+          alt="User Image"
         />
         <p
-          class="bg-cyan-500 border-2 border-white rounded-3xl w-full mt-5 mb-5 text-2xl font-bold text-black p-2"
           id="UserName"
+          class="mt-4 text-xl font-semibold text-gray-900 w-full text-center truncate"
         ></p>
-        <p class="font-semibold text-xl mt-2 mb-2">Pending Projects</p>
+        <p class="mt-8 text-lg font-medium text-gray-700">Pending Projects</p>
         <p
           id="project-count"
-          class="mb-2 mt-3 bg-cyan-800 text-white font-bold h-13 w-25 mx-auto flex items-center justify-center rounded-full text-3xl"
+          class="mt-3 bg-cyan-600 text-white text-3xl font-bold rounded-full w-20 h-12 flex items-center justify-center select-none"
         ></p>
-      </div>
+      </section>
 
       <!-- Content -->
-      <div
-        class="bg-gradient-to-tr from-orange-600 via-orange-300 to-orange-600 flex justify-center text-center h-96 w-96 rounded-3xl border-2 border-red-400 p-3"
+      <section
+        class="bg-white rounded-lg border border-orange-400 w-96 h-96 p-6 flex flex-col justify-center shadow-sm"
       >
-        <div>
-          <h1 class="text-2xl font-bold m-2">
-            AI-Powered Review for Codingal Projects
-          </h1>
-          <h3 class="font-semibold m-5">
-            Automate project reviews with one smart click. Seamless. Fast.
-            Reliable.
-          </h3>
-          <!-- Phone Number -->
-          <input
-            class="bg-white rounded-3xl text-center border-red-500 border-2 w-80 h-10 font-bold m-2"
-            type="number"
-            id="number"
-            placeholder="Enter Phone Number"
-          />
-          <br />
-          <!-- Password -->
+        <h1
+          class="text-2xl font-semibold text-gray-900 mb-4 text-center leading-tight"
+        >
+          AI-Powered Review for Codingal Projects
+        </h1>
+        <p class="text-gray-700 mb-6 text-center text-sm leading-relaxed">
+          Automate project reviews with one smart click. Seamless. Fast.
+          Reliable.
+        </p>
 
+        <input
+          type="number"
+          id="number"
+          placeholder="Enter Phone Number"
+          class="w-full mb-4 px-4 py-2 border border-orange-400 rounded-md text-center text-gray-800 placeholder-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition"
+        />
+
+        <!-- Password Input with Show/Hide -->
+        <div class="relative w-full mb-6">
           <input
-            class="bg-white rounded-3xl text-center border-red-500 border-2 w-80 h-10 font-bold m-2"
             type="password"
             id="password"
-            placeholder="Enter password"
+            placeholder="Enter Password"
+            class="w-full px-4 py-2 border border-orange-400 rounded-md text-center text-gray-800 placeholder-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition pr-10"
           />
-
-          <br />
-          <div class="flex justify-center items-center gap-3">
-            <button
-              id="Cancel_Button"
-              class="m-5 bg-orange-700 text-white px-4 py-3 rounded-3xl border-2 border-white font-bold hover:text-orange-700 hover:bg-white hover:border-orange-700"
+          <button
+            type="button"
+            id="togglePassword"
+            aria-label="Toggle password visibility"
+            class="absolute inset-y-0 right-2 flex items-center text-orange-500 hover:text-orange-600 focus:outline-none"
+          >
+            <svg
+              id="eyeIcon"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
             >
-              Cancel
-            </button>
-            <button
-              id="StartReviewButton"
-              class="m-5 bg-orange-700 text-white px-4 py-3 rounded-3xl border-2 border-white font-bold hover:text-orange-700 hover:bg-white hover:border-orange-700"
-            >
-              Review Project
-            </button>
-          </div>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+          </button>
         </div>
-      </div>
+
+        <div class="flex justify-center gap-6">
+          <button
+            id="Cancel_Button"
+            class="px-6 py-2 border border-orange-400 text-orange-600 rounded-md font-semibold hover:bg-orange-50 transition"
+          >
+            Cancel
+          </button>
+          <button
+            id="StartReviewButton"
+            class="px-6 py-2 bg-orange-600 text-white rounded-md font-semibold hover:bg-orange-700 transition"
+          >
+            Review Project
+          </button>
+        </div>
+      </section>
 
       <!-- Notification -->
-      <div
+      <section
         id="notification"
-        class="bg-cyan-200 w-96 h-96 font-bold border-2 border-cyan-500 rounded-3xl overflow-y-auto p-3 space-y-2 shadow-md"
+        class="bg-white rounded-lg border border-cyan-300 w-96 h-96 p-5 flex flex-col shadow-sm overflow-y-auto max-h-96"
       >
         <p
           id="notif-head"
-          class="text-center text-xl font-semibold text-cyan-100 bg-cyan-950 p-2 rounded-3xl shadow"
+          class="text-center font-semibold text-cyan-700 mb-2 select-none"
         >
           Notification
         </p>
-        <div id="notif-messages" class="space-y-1"></div>
-      </div>
+        <div
+          id="notif-messages"
+          class="space-y-2 text-gray-800 text-sm overflow-y-auto"
+        ></div>
+      </section>
     </div>
 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
     <script>
-      //Attributes
+      // Attributes
       const toast = document.getElementById("toast");
       const socket = io();
       const Review_btn = document.getElementById("StartReviewButton");
@@ -108,13 +141,6 @@
       const UserImage = document.getElementById("UserImage");
       const UserName = document.getElementById("UserName");
       const ProjectCount = document.getElementById("project-count");
-
-      // //Profile Manage
-      // socket.emit('UserDetailsSocket') // Request for Data
-      // socket.on("User_Details",(data)=>{
-      //   UserImage.src = data.Picture;
-      //   UserName.textContent = data.Name;
-      // })
 
       // Toast Notification
       function showToast(message) {
@@ -128,16 +154,19 @@
         }, 3000);
       }
 
-      //Review Code
-      Review_btn.addEventListener("click", () => {
-        
-        //Profile Manage
-        socket.emit("UserDetailsSocket"); // Request for Data
-        socket.on("User_Details", (data) => {
-          UserImage.src = data.Picture;
-          UserName.textContent = data.Name;
-        });
+      // Profile Manage
+      socket.on("User_Details", (data) => {
+        UserImage.src = data.Picture;
+        UserName.textContent = data.Name;
+      });
 
+      // Project Count Update
+      socket.on("Project_Count_Update", (data) => {
+        ProjectCount.textContent = data;
+      });
+
+      // Review Code
+      Review_btn.addEventListener("click", () => {
         const number = document.getElementById("number").value;
         const password = document.getElementById("password").value;
 
@@ -149,7 +178,7 @@
         socket.emit("start_review", { number, password });
 
         const head = document.getElementById("notif-head");
-        head.className = head.textContent = "🚀 Starting project review...";
+        head.textContent = "🚀 Starting project review...";
       });
 
       socket.on("review_update", (msg) => {
@@ -163,13 +192,35 @@
         showToast(msg);
       });
 
-      //Cancel Code
+      // Cancel Code
       Cancel_btn.addEventListener("click", () => {
         socket.emit("Cancel_Review");
         const head = document.getElementById("notif-head");
-        head.className =
-          "text-center text-xl font-semibold text-cyan-100 bg-cyan-950 p-2 rounded-3xl shadow";
-        head.textContent = "❌ Review cancelled by user.";
+        head.textContent = "❌Review cancelled by user.";
+      });
+
+      // Password Show/Hide Toggle
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+      const eyeIcon = document.getElementById("eyeIcon");
+
+      togglePassword.addEventListener("click", () => {
+        const type =
+          passwordInput.getAttribute("type") === "password" ? "text" : "password";
+        passwordInput.setAttribute("type", type);
+
+        // Toggle icon (eye / eye-off)
+        if (type === "password") {
+          eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          `;
+        } else {
+          eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.269-2.944-9.543-7a9.97 9.97 0 012.54-4.412M6.22 6.22a9.953 9.953 0 014.454-2.54M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"/>
+          `;
+        }
       });
     </script>
   </body>
