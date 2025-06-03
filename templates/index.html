@@ -20,8 +20,14 @@
 
       <!-- Profile -->
       <section
-        class="bg-white rounded-lg border border-cyan-300 w-96 h-96 p-6 flex flex-col items-center shadow-sm"
+        class="bg-white rounded-lg border border-cyan-300 w-96 h-96 p-6 flex flex-col items-center shadow-sm space-y-5"
       >
+
+      <div
+      class="text-xl text-center font-semibold text-cyan-700  select-none bg-gray-100 px-4 py-2 rounded-xl">
+        User Profile
+      </div>
+
         <img
           id="UserImage"
           class="h-24 w-24 rounded-full border-2 border-cyan-400 object-cover"
@@ -115,17 +121,17 @@
       <!-- Notification -->
       <section
         id="notification"
-        class="bg-white rounded-lg border border-cyan-300 w-96 h-96 p-5 flex flex-col shadow-sm overflow-y-auto max-h-96"
+        class="bg-white rounded-lg border border-cyan-300 w-96 h-96 p-4 flex flex-col shadow-sm overflow-y-auto max-h-96"
       >
         <p
           id="notif-head"
-          class="text-center font-semibold text-cyan-700 mb-2 select-none"
+          class="text-center font-semibold text-cyan-700 select-none bg-gray-100 px-2 py-4 text-xl rounded-xl"
         >
           Notification
         </p>
         <div
           id="notif-messages"
-          class="space-y-2 text-gray-800 text-sm overflow-y-auto"
+          class="mb-1 space-y-2 text-gray-800 text-sm overflow-y-auto"
         ></div>
       </section>
     </div>
@@ -186,7 +192,7 @@
         const p = document.createElement("p");
         p.textContent = `🔔 ${msg}`;
         p.className =
-          "font-semibold bg-cyan-300 p-2 rounded-xl shadow-sm shadow-black m-2";
+          "font-semibold bg-cyan-300 p-2 rounded-xl shadow-sm shadow-black mb-2 mt-2";
         notif.appendChild(p);
         notif.scrollTop = notif.scrollHeight;
         showToast(msg);
