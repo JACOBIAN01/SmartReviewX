@@ -148,7 +148,7 @@ class CodingalReviewer:
             review_btn.click()
             
             textarea = self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "textarea")))
-            review = self._generate_review(student_name, lesson_name)
+            review = self.generate_review(student_name, lesson_name)
             textarea.send_keys(review)
             
             try:
@@ -165,14 +165,14 @@ class CodingalReviewer:
             submit_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit review')]")))
             submit_btn.click()
             
-            self._update(f"Review completed successfully for {student_name}.")
+            self.update(f"Review completed successfully for {student_name}.")
             time.sleep(1)
             
             back_to_projects = self.wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Back to projects')])")))
             back_to_projects.click()
             time.sleep(1)
         except Exception as e:
-            self._update(f"Error during review: {e}")
+            self.update(f"Error during review: {e}")
 
     def start_review(self):
         chrome_options = Options()
@@ -185,26 +185,26 @@ class CodingalReviewer:
         self.driver = webdriver.Chrome(options=chrome_options)
         self.wait = WebDriverWait(self.driver, 10)
         
-        self._login()
+        self.login()
         self.review_cancel = False
         
         while True:
-            pending_projects = self._pending_project_count()
+            pending_projects = self.pending_project_count()
             self.project_count = pending_projects
             
             if pending_projects == 0:
-                self._update("All projects review completed.")
+                self.update("All projects review completed.")
                 break
             
             if self.review_cancel:
-                self._update("Review cancelled.")
+                self.update("Review cancelled.")
                 break
             
             try:
-                self._review_project()
+                self.review_project()
                 time.sleep(3)
             except Exception as e:
-                self._update(f"Error inside start_review, moving forward: {e}")
+                self.update(f"Error inside start_review, moving forward: {e}")
                 continue
         
         self.driver.quit()
