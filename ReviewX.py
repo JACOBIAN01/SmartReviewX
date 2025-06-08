@@ -142,11 +142,11 @@ class CodingalReviewer:
     def review_project(self):
         try:
             self.send_review_tracker_update("Review Started")
-            time.sleep(1.5)
+            time.sleep(2)
             self.send_review_tracker_update("Analyzing Project ")
             element = self.wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Review now')])[1]")))
             self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
-            time.sleep(1)
+            time.sleep(2)
             self.driver.execute_script("arguments[0].click();", element)
             
             student_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Submitted by')]/preceding-sibling::p")))
@@ -175,11 +175,10 @@ class CodingalReviewer:
             self.send_review_tracker_update("Analyzing Rating for the Project")
             submit_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit review')]")))
             self.send_review_tracker_update("Review Submitted")
+            time.sleep(0.5)
             submit_btn.click()
-
             self.update(f"Review completed successfully for {student_name}.")
             time.sleep(1)
-            
             back_to_projects = self.wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Back to projects')])")))
             back_to_projects.click()
             time.sleep(1)

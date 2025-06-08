@@ -22,7 +22,7 @@
       }
 
       .animate-grow {
-        animation: grow 9s linear forwards;
+        animation: grow 7s linear forwards;
       }
     </style>
   </head>
@@ -31,15 +31,13 @@
     <!-- Toast Notification -->
     <div
       id="toast"
-      class="fixed top-14 left-1/2 transform -translate-x-1/2 bg-orange-700 text-white px-6 py-2 rounded-md shadow-md opacity-100 pointer-events-none transition-opacity duration-300 z-50 text-lg font-medium"
-    >
-      Hello
-    </div>
+      class="fixed top-14 left-1/2 transform -translate-x-1/2 bg-orange-700 text-white px-6 py-2 rounded-md shadow-md opacity-0 pointer-events-none transition-opacity duration-300 z-50 text-lg font-medium"
+    ></div>
 
     <!-- Review Tracker Notification -->
 
     <div
-    id="review_tracker"
+      id="review_tracker"
       class="fixed top-28 w-full max-w-md h-14 bg-gray-900 rounded-full overflow-hidden relative mx-auto shadow-lg border border-gray-700 opacity-0"
     >
       <!-- Progress Bar with dashed animation on the right edge -->
@@ -53,11 +51,8 @@
       <div
         id="review_tracker_text"
         class="absolute inset-0 flex items-center justify-center z-10 text-white font-extrabold text-lg select-none"
-      >
-        Review Going On
-      </div>
+      ></div>
     </div>
-
 
     <div class="min-h-screen flex justify-center items-center gap-10 m-5">
       <!-- Profile -->
@@ -241,24 +236,40 @@
       });
 
       // Review_Tracker
-      var review_tracker = document.getElementById("review_tracker")
+      let trackerStarted = false;
 
-      function showReviewTracker(){
-       
-        review_tracker.classList.add("opacity-100")
-        review_tracker.classList.remove("opacity-0")
+      function showReviewTracker() {
+        const tracker = document.getElementById("review_tracker");
+        const progress = document.getElementById("review_tracker_bg");
 
-          setTimeout(()=>{
-            review_tracker.classList.add("opacity-100")
-            review_tracker.classList.remove("opacity-0")
-          },8000)
+        if (trackerStarted) return; // Don't start again
 
+        tracker.classList.remove("opacity-0");
+        tracker.classList.add("opacity-100");
+
+        // Start progress bar only once
+        progress.style.transition = "width 7s linear";
+        progress.style.width = "100%";
+
+        // Auto hide after 7 sec
+        setTimeout(() => {
+          tracker.classList.remove("opacity-100");
+          tracker.classList.add("opacity-0");
+
+          // Reset
+          trackerStarted = false;
+          progress.style.transition = "none";
+          progress.style.width = "0%";
+        }, 7000);
+
+        trackerStarted = true;
       }
-      socket.on("review_tracker",(msg)=>{
-       
-        var review_tracker_text = document.getElementById("review_tracker_text");
-        review_tracker_text.textContent = msg;
-      })
+
+      socket.on("review_tracker", (msg) => {
+        const text = document.getElementById("review_tracker_text");
+        text.textContent = message;
+        showReviewTracker();
+      });
 
       // Cancel Code
       Cancel_btn.addEventListener("click", () => {
