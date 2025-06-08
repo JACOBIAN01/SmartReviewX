@@ -38,7 +38,7 @@
 
     <div
       id="review_tracker"
-      class="fixed top-28 w-full max-w-md h-14 bg-gray-900 rounded-full overflow-hidden relative mx-auto shadow-lg border border-gray-700 opacity-0"
+      class="fixed top-28 w-full max-w-md h-12 bg-gray-900 rounded-full overflow-hidden relative mx-auto shadow-lg border border-gray-700 opacity-0"
     >
       <!-- Progress Bar with dashed animation on the right edge -->
       <div
@@ -184,6 +184,9 @@
       const UserImage = document.getElementById("UserImage");
       const UserName = document.getElementById("UserName");
       const ProjectCount = document.getElementById("project-count");
+      const tracker = document.getElementById("review_tracker");
+      const progress = document.getElementById("review_tracker_bg");
+      const Review_tracker_text = document.getElementById("review_tracker_text");
 
       // Toast Notification
       function showToast(message) {
@@ -236,44 +239,48 @@
       });
 
       // Review_Tracker
-      let trackerStarted = false;
+      // let trackerStarted = false;
 
-      function showReviewTracker() {
-        const tracker = document.getElementById("review_tracker");
-        const progress = document.getElementById("review_tracker_bg");
+      // function showReviewTracker() {
+      //   const tracker = document.getElementById("review_tracker");
+      //   const progress = document.getElementById("review_tracker_bg");
 
-        if (trackerStarted) return; // Don't start again
+      //   if (trackerStarted) return; // Don't start again
 
-        tracker.classList.remove("opacity-0");
-        tracker.classList.add("opacity-100");
+      //   tracker.classList.remove("opacity-0");
+      //   tracker.classList.add("opacity-100");
 
-        // Start progress bar only once
-        progress.style.transition = "width 7s linear";
-        progress.style.width = "100%";
+      //   // Start progress bar only once
+      //   progress.style.transition = "width 7s linear";
+      //   progress.style.width = "100%";
 
-        // Auto hide after 7 sec
-        setTimeout(() => {
-          tracker.classList.remove("opacity-100");
-          tracker.classList.add("opacity-0");
+      //   // Auto hide after 7 sec
+      //   setTimeout(() => {
+      //     tracker.classList.remove("opacity-100");
+      //     tracker.classList.add("opacity-0");
 
-          // Reset
-          trackerStarted = false;
-          progress.style.transition = "none";
-          progress.style.width = "0%";
-        }, 7000);
+      //     // Reset
+      //     trackerStarted = false;
+      //     progress.style.transition = "none";
+      //     progress.style.width = "0%";
+      //   }, 7000);
 
-        trackerStarted = true;
-      }
+      //   trackerStarted = true;
+      // }
 
       socket.on("review_tracker", (msg) => {
-        const text = document.getElementById("review_tracker_text");
-        text.textContent = message;
-        showReviewTracker();
+        if(msg){
+          tracker.classList.remove("opacity-0");
+          tracker.classList.add("opacity-100");
+        }
+        Review_tracker_text.textContent = msg;
       });
 
       // Cancel Code
       Cancel_btn.addEventListener("click", () => {
         socket.emit("Cancel_Review");
+        tracker.classList.add("opacity-0");
+        tracker.classList.remove("opacity-100");
         const head = document.getElementById("notif-head");
         head.textContent = "❌Review cancelled by user.";
       });

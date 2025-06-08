@@ -31,7 +31,6 @@ def handle_review(data):
     def Send_Review_Tracker(msg):
         socketio.emit("review_tracker", msg)
 
-      
     try:
         # Create a new reviewer instance
         reviewer = CodingalReviewer(number, password, log_callback=send_update,review_callback=Send_Review_Tracker)

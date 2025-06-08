@@ -20,12 +20,10 @@ class CodingalReviewer:
         self.project_count = None
         
     def update(self, message):
-        print(message)
         if self.log_callback:
             self.log_callback(message)
     
     def send_review_tracker_update(self,message):
-        print(message)
         if self.review_callback:
             self.review_callback(message)
     
@@ -143,20 +141,21 @@ class CodingalReviewer:
         try:
             self.send_review_tracker_update("Review Started")
             time.sleep(2)
-            self.send_review_tracker_update("Analyzing Project ")
             element = self.wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Review now')])[1]")))
             self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
-            time.sleep(2)
             self.driver.execute_script("arguments[0].click();", element)
+            time.sleep(2)
+            self.send_review_tracker_update("Analyzing Project ")
             
             student_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Submitted by')]/preceding-sibling::p")))
             student_name = student_name_elem.text
             
             lesson_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Lesson')]")))
             lesson_name = lesson_name_elem.text
-            
+           
             review_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Review now')]")))
             review_btn.click()
+            time.sleep(2)
             
             textarea = self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "textarea")))
             review = self.generate_review(student_name, lesson_name)
@@ -168,17 +167,16 @@ class CodingalReviewer:
                 time.sleep(3)
             except Exception:
                 pass
-            
+            self.send_review_tracker_update("Analyzing Rating for the Project")
             stars = self.wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "rating-star")))
             given_stars = random.choice([3,4])  # zero-based index; clicks 4th or 5th star
             stars[given_stars].click()
-            self.send_review_tracker_update("Analyzing Rating for the Project")
+            time.sleep(2)
             submit_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit review')]")))
             self.send_review_tracker_update("Review Submitted")
-            time.sleep(0.5)
             submit_btn.click()
-            self.update(f"Review completed successfully for {student_name}.")
             time.sleep(1)
+            self.update(f"Review completed successfully for {student_name}.")
             back_to_projects = self.wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Back to projects')])")))
             back_to_projects.click()
             time.sleep(1)
@@ -213,7 +211,6 @@ class CodingalReviewer:
             
             try:
                 self.review_project()
-                time.sleep(3)
             except Exception as e:
                 self.update(f"Error inside start_review, moving forward")
                 continue
