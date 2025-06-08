@@ -59,10 +59,10 @@ class CodingalReviewer:
             
             login_btn_2 = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]")))
             login_btn_2.click()
-            time.sleep(2)
+            time.sleep(1)
             
             profile_pic = self.wait.until(EC.presence_of_element_located((By.XPATH, "//img[@alt='Profile Image']")))
-            time.sleep(2)
+            time.sleep(1)
             
             teacher_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'flex-col')]/h2")))
             teacher_name = teacher_name_elem.text
@@ -76,8 +76,8 @@ class CodingalReviewer:
             
             self.update(f"Login Successful! Hello {teacher_name}")
         except Exception as e:
-            self.update(f"Error During Login: {e}")
-            raise
+            self.update(f"Error During Login: Please Check Your Credentials Again.")
+            self.update("Please Cancel & Try Again!")
     
     def pending_project_count(self):
         self.driver.get("https://www.codingal.com/teacher/dashboard/projects/")
@@ -130,6 +130,7 @@ class CodingalReviewer:
         except Exception:
             return f"Congratulations {name} on completing {lesson}! Your dedication and effort are commendable."
 
+
     def review_project(self):
         try:
             time.sleep(1.5)
@@ -172,7 +173,7 @@ class CodingalReviewer:
             back_to_projects.click()
             time.sleep(1)
         except Exception as e:
-            self.update(f"Error during review: {e}")
+            self.update(f"Error during review")
 
     def start_review(self):
         chrome_options = Options()
@@ -204,7 +205,7 @@ class CodingalReviewer:
                 self.review_project()
                 time.sleep(3)
             except Exception as e:
-                self.update(f"Error inside start_review, moving forward: {e}")
+                self.update(f"Error inside start_review, moving forward")
                 continue
         
         self.driver.quit()
