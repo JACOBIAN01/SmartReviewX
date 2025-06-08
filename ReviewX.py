@@ -7,10 +7,11 @@ import time
 import random
 
 class CodingalReviewer:
-    def __init__(self, number, password, log_callback=None):
+    def __init__(self, number, password, log_callback=None,review_callback = None):
         self.number = number
         self.password = password
         self.log_callback = log_callback
+        self.review_callback = review_callback
         
         self.driver = None
         self.wait = None
@@ -22,6 +23,11 @@ class CodingalReviewer:
         print(message)
         if self.log_callback:
             self.log_callback(message)
+    
+    def send_review_tracker_update(self,message):
+        print(message)
+        if self.review_callback:
+            self.review_callback(message)
     
     def store_user_details(self, src, name):
         self.user_data = {"Name": name, "Picture": src}
@@ -37,7 +43,7 @@ class CodingalReviewer:
     
     def login(self):
         try:
-            self.update("Opening Your Dashboard")
+            self.update("Logging in with your credentials...")
             self.driver.get("https://www.codingal.com/")
             time.sleep(1)
             
@@ -60,6 +66,8 @@ class CodingalReviewer:
             login_btn_2 = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]")))
             login_btn_2.click()
             time.sleep(1)
+
+            self.update("Opening Your Dashboard...")
             
             profile_pic = self.wait.until(EC.presence_of_element_located((By.XPATH, "//img[@alt='Profile Image']")))
             time.sleep(1)
@@ -133,7 +141,9 @@ class CodingalReviewer:
 
     def review_project(self):
         try:
+            self.send_review_tracker_update("Review Started")
             time.sleep(1.5)
+            self.send_review_tracker_update("Analyzing Project ")
             element = self.wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Review now')])[1]")))
             self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
             time.sleep(1)
@@ -151,7 +161,7 @@ class CodingalReviewer:
             textarea = self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "textarea")))
             review = self.generate_review(student_name, lesson_name)
             textarea.send_keys(review)
-            
+            self.send_review_tracker_update("Generating Review ")
             try:
                 enhance_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH,"//button[.//span[text()='Enhance with AI']]")))
                 enhance_btn.click()
@@ -162,10 +172,11 @@ class CodingalReviewer:
             stars = self.wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "rating-star")))
             given_stars = random.choice([3,4])  # zero-based index; clicks 4th or 5th star
             stars[given_stars].click()
-            
+            self.send_review_tracker_update("Analyzing Rating for the Project")
             submit_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit review')]")))
+            self.send_review_tracker_update("Review Submitted")
             submit_btn.click()
-            
+
             self.update(f"Review completed successfully for {student_name}.")
             time.sleep(1)
             

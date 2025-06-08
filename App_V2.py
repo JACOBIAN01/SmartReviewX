@@ -27,10 +27,14 @@ def handle_review(data):
             socketio.emit("Project_Count_Update", reviewer.get_project_count())
             socketio.emit("User_Details", reviewer.get_user_details())
         socketio.emit("review_update", msg)
+    
+    def Send_Review_Tracker(msg):
+        socketio.emit("review_tracker", msg)
 
+      
     try:
         # Create a new reviewer instance
-        reviewer = CodingalReviewer(number, password, log_callback=send_update)
+        reviewer = CodingalReviewer(number, password, log_callback=send_update,review_callback=Send_Review_Tracker)
         
         # Run the review process in background
         socketio.start_background_task(reviewer.start_review)

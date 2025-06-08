@@ -105,7 +105,7 @@ def Generate_Review(name,lesson):
 
 def Review_Project(driver,wait,log_callback=None):
     try:
-        time.sleep(1.5)
+        time.sleep(1)
         element = wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Review now')])[1]")))
         driver.execute_script("arguments[0].scrollIntoView(true);", element)
         time.sleep(1)  # Allow time for scrolling

@@ -4,29 +4,71 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ReviewX</title>
-    <link rel="icon" type="image/png" href="./Logo.png" />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='Logo.png') }}"
+      type="image/x-icon"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      @keyframes grow {
+        0% {
+          width: 0%;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+
+      .animate-grow {
+        animation: grow 9s linear forwards;
+      }
+    </style>
   </head>
 
   <body class="bg-gradient-to-r from-[#FFE0C3] to-[#FFB6A3] overflow-hidden">
-
     <!-- Toast Notification -->
     <div
       id="toast"
-      class="fixed top-16 left-1/2 transform -translate-x-1/2 bg-orange-700 text-white px-6 py-2 rounded-md shadow-md opacity-0 pointer-events-none transition-opacity duration-300 z-50 text-lg font-medium"
-    ></div>
+      class="fixed top-14 left-1/2 transform -translate-x-1/2 bg-orange-700 text-white px-6 py-2 rounded-md shadow-md opacity-100 pointer-events-none transition-opacity duration-300 z-50 text-lg font-medium"
+    >
+      Hello
+    </div>
+
+    <!-- Review Tracker Notification -->
+
+    <div
+    id="review_tracker"
+      class="fixed top-28 w-full max-w-md h-14 bg-gray-900 rounded-full overflow-hidden relative mx-auto shadow-lg border border-gray-700 opacity-0"
+    >
+      <!-- Progress Bar with dashed animation on the right edge -->
+      <div
+        id="review_tracker_bg"
+        class="absolute top-0 left-0 h-full bg-gradient-to-r from-red-500 via-pink-500 to-purple-600 animate-grow z-0 rounded-l-full"
+        style="box-shadow: 2px 0 8px rgba(255, 0, 128, 0.7)"
+      ></div>
+
+      <!-- Centered Text -->
+      <div
+        id="review_tracker_text"
+        class="absolute inset-0 flex items-center justify-center z-10 text-white font-extrabold text-lg select-none"
+      >
+        Review Going On
+      </div>
+    </div>
+
 
     <div class="min-h-screen flex justify-center items-center gap-10 m-5">
-
       <!-- Profile -->
       <section
         class="bg-white rounded-lg border border-cyan-300 w-96 h-96 p-6 flex flex-col items-center shadow-sm space-y-5"
       >
-
-      <div
-      class="text-xl text-center font-semibold text-cyan-700  select-none bg-gray-100 px-4 py-2 rounded-xl">
-        User Profile
-      </div>
+        <div
+          class="text-xl text-center font-semibold text-cyan-700 select-none bg-gray-100 px-4 py-2 rounded-xl"
+        >
+          User Profile
+        </div>
 
         <img
           id="UserImage"
@@ -198,6 +240,26 @@
         showToast(msg);
       });
 
+      // Review_Tracker
+      var review_tracker = document.getElementById("review_tracker")
+
+      function showReviewTracker(){
+       
+        review_tracker.classList.add("opacity-100")
+        review_tracker.classList.remove("opacity-0")
+
+          setTimeout(()=>{
+            review_tracker.classList.add("opacity-100")
+            review_tracker.classList.remove("opacity-0")
+          },8000)
+
+      }
+      socket.on("review_tracker",(msg)=>{
+       
+        var review_tracker_text = document.getElementById("review_tracker_text");
+        review_tracker_text.textContent = msg;
+      })
+
       // Cancel Code
       Cancel_btn.addEventListener("click", () => {
         socket.emit("Cancel_Review");
@@ -212,7 +274,9 @@
 
       togglePassword.addEventListener("click", () => {
         const type =
-          passwordInput.getAttribute("type") === "password" ? "text" : "password";
+          passwordInput.getAttribute("type") === "password"
+            ? "text"
+            : "password";
         passwordInput.setAttribute("type", type);
 
         // Toggle icon (eye / eye-off)
