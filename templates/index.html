@@ -186,7 +186,9 @@
       const ProjectCount = document.getElementById("project-count");
       const tracker = document.getElementById("review_tracker");
       const progress = document.getElementById("review_tracker_bg");
-      const Review_tracker_text = document.getElementById("review_tracker_text");
+      const Review_tracker_text = document.getElementById(
+        "review_tracker_text"
+      );
 
       // Toast Notification
       function showToast(message) {
@@ -268,11 +270,38 @@
       //   trackerStarted = true;
       // }
 
-      socket.on("review_tracker", (msg) => {
-        if(msg){
+      const start = "Review Started"; // Collected from ReviewX.py
+      const end = "Review Submitted";
+
+      function ReloadProgressBar(msg) {
+        if (msg == start) {
+          // Start progress bar animation
           tracker.classList.remove("opacity-0");
           tracker.classList.add("opacity-100");
+
+          // Reset progress bar width immediately (without transition)
+          progress.style.transition = "none";
+          progress.style.width = "0%";
+
+          // Trigger reflow to apply the width reset before animating
+          void progress.offsetWidth;
+
+          // Animate progress bar width to 100% smoothly over 7 seconds
+          progress.style.transition = "width 7s linear";
+          progress.style.width = "100%";
         }
+        if (msg == end) {
+          // Hide progress bar smoothly by resetting width immediately
+          progress.style.transition = "none";
+          progress.style.width = "0%";
+
+          tracker.classList.add("opacity-0");
+          tracker.classList.remove("opacity-100");
+        }
+      }
+
+      socket.on("review_tracker", (msg) => {
+        ReloadProgressBar(msg);
         Review_tracker_text.textContent = msg;
       });
 
