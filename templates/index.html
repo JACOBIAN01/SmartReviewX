@@ -240,68 +240,30 @@
         showToast(msg);
       });
 
-      // Review_Tracker
-      // let trackerStarted = false;
+      
+      let tracker_started = false;
 
-      // function showReviewTracker() {
-      //   const tracker = document.getElementById("review_tracker");
-      //   const progress = document.getElementById("review_tracker_bg");
-
-      //   if (trackerStarted) return; // Don't start again
-
-      //   tracker.classList.remove("opacity-0");
-      //   tracker.classList.add("opacity-100");
-
-      //   // Start progress bar only once
-      //   progress.style.transition = "width 7s linear";
-      //   progress.style.width = "100%";
-
-      //   // Auto hide after 7 sec
-      //   setTimeout(() => {
-      //     tracker.classList.remove("opacity-100");
-      //     tracker.classList.add("opacity-0");
-
-      //     // Reset
-      //     trackerStarted = false;
-      //     progress.style.transition = "none";
-      //     progress.style.width = "0%";
-      //   }, 7000);
-
-      //   trackerStarted = true;
-      // }
-
-      const start = "Review Started"; // Collected from ReviewX.py
-      const end = "Review Submitted";
-
-      function ReloadProgressBar(msg) {
-        if (msg == start) {
-          // Start progress bar animation
-          tracker.classList.remove("opacity-0");
-          tracker.classList.add("opacity-100");
-
-          // Reset progress bar width immediately (without transition)
-          progress.style.transition = "none";
-          progress.style.width = "0%";
-
-          // Trigger reflow to apply the width reset before animating
-          void progress.offsetWidth;
-
-          // Animate progress bar width to 100% smoothly over 7 seconds
-          progress.style.transition = "width 7s linear";
-          progress.style.width = "100%";
-        }
-        if (msg == end) {
-          // Hide progress bar smoothly by resetting width immediately
-          progress.style.transition = "none";
-          progress.style.width = "0%";
-
-          tracker.classList.add("opacity-0");
+      function ReloadProgressBar() {
+       if(tracker_started) return;
+       tracker.classList.remove("opacity-0");
+       tracker.classList.add("opacity-100");
+       // Start progress bar only once
+       progress.style.transition = "width 7s linear";
+       progress.style.width = "100%";
+       setTimeout(() => {
           tracker.classList.remove("opacity-100");
-        }
+          tracker.classList.add("opacity-0");
+
+          // Reset
+          tracker_started= false;
+          progress.style.transition = "none";
+          progress.style.width = "0%";
+        }, 12000);
+       tracker_started = true;
       }
 
       socket.on("review_tracker", (msg) => {
-        ReloadProgressBar(msg);
+        ReloadProgressBar();
         Review_tracker_text.textContent = msg;
       });
 
