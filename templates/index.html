@@ -11,20 +11,7 @@
     />
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-      @keyframes grow {
-        0% {
-          width: 0%;
-        }
-        100% {
-          width: 100%;
-        }
-      }
-
-      .animate-grow {
-        animation: grow 7s linear forwards;
-      }
-    </style>
+   
   </head>
 
   <body class="bg-gradient-to-r from-[#FFE0C3] to-[#FFB6A3] overflow-hidden">
@@ -240,31 +227,38 @@
         showToast(msg);
       });
 
-      
-      let tracker_started = false;
+      // Progress Bar Review Tracker
+      const start = "Review Started";
+      const end = "Review Submitted";
 
-      function ReloadProgressBar() {
-       if(tracker_started) return;
-       tracker.classList.remove("opacity-0");
-       tracker.classList.add("opacity-100");
-       // Start progress bar only once
-       progress.style.transition = "width 7s linear";
-       progress.style.width = "100%";
-       setTimeout(() => {
-          tracker.classList.remove("opacity-100");
-          tracker.classList.add("opacity-0");
-
-          // Reset
-          tracker_started= false;
+      function UpdateProgressBar(msg) {
+        if (msg === start) {
+          // Reset progress before starting
           progress.style.transition = "none";
           progress.style.width = "0%";
-        }, 12000);
-       tracker_started = true;
+
+          // Trigger reflow to apply reset width immediately
+          void progress.offsetWidth;
+
+          // Show tracker and start transition
+          tracker.classList.remove("opacity-0");
+          tracker.classList.add("opacity-100");
+          progress.style.transition = "width 13s linear";
+          progress.style.width = "100%";
+        } else if (msg === end) {
+          setTimeout(() => {
+            tracker.classList.remove("opacity-100");
+            tracker.classList.add("opacity-0");
+            // Stop the animation and reset
+            progress.style.transition = "none";
+            progress.style.width = "0%";
+          }, 1000);
+        }
       }
 
       socket.on("review_tracker", (msg) => {
-        ReloadProgressBar();
         Review_tracker_text.textContent = msg;
+        UpdateProgressBar(msg);
       });
 
       // Cancel Code
