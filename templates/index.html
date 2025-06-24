@@ -163,7 +163,10 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
     <script>
+
+      
       // Attributes
+      const session_id = crypto.randomUUID();
       const toast = document.getElementById("toast");
       const socket = io();
       const Review_btn = document.getElementById("StartReviewButton");
@@ -210,7 +213,8 @@
           return;
         }
 
-        socket.emit("start_review", { number, password });
+        //On review Start
+        socket.emit("start_review", { number, password,session_id });
 
         const head = document.getElementById("notif-head");
         head.textContent = "🚀 Starting project review...";
@@ -243,7 +247,7 @@
           // Show tracker and start transition
           tracker.classList.remove("opacity-0");
           tracker.classList.add("opacity-100");
-          progress.style.transition = "width 13s linear";
+          progress.style.transition = "width 6s linear";
           progress.style.width = "100%";
         } else if (msg === end) {
           setTimeout(() => {
@@ -261,9 +265,10 @@
         UpdateProgressBar(msg);
       });
 
+
       // Cancel Code
       Cancel_btn.addEventListener("click", () => {
-        socket.emit("Cancel_Review");
+        socket.emit("Cancel_Review",{session_id});
         tracker.classList.add("opacity-0");
         tracker.classList.remove("opacity-100");
         const head = document.getElementById("notif-head");

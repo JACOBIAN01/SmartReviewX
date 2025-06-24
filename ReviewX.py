@@ -140,12 +140,12 @@ class CodingalReviewer:
     def review_project(self):
         try:
             self.send_review_tracker_update("Review Started")
-            time.sleep(2)
+            time.sleep(0.25)
             element = self.wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Review now')])[1]")))
             self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
             self.driver.execute_script("arguments[0].click();", element)
-            time.sleep(2)
-            self.send_review_tracker_update("Analyzing Project ")
+            time.sleep(1)
+            self.send_review_tracker_update("Analyzing Project")
             
             student_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Submitted by')]/preceding-sibling::p")))
             student_name = student_name_elem.text
@@ -155,7 +155,7 @@ class CodingalReviewer:
            
             review_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Review now')]")))
             review_btn.click()
-            time.sleep(2)
+            time.sleep(0.5)
             
             textarea = self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "textarea")))
             review = self.generate_review(student_name, lesson_name)
@@ -171,11 +171,11 @@ class CodingalReviewer:
             stars = self.wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "rating-star")))
             given_stars = random.choice([3,4])  # zero-based index; clicks 4th or 5th star
             stars[given_stars].click()
-            time.sleep(2)
+            time.sleep(0.5)
             submit_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit review')]")))
             submit_btn.click()
             self.send_review_tracker_update("Review Submitted")
-            time.sleep(0.75)
+            time.sleep(0.5)
             self.update(f"Review completed successfully for {student_name}.")
             back_to_projects = self.wait.until(EC.element_to_be_clickable((By.XPATH, "(//a[contains(text(), 'Back to projects')])")))
             back_to_projects.click()
