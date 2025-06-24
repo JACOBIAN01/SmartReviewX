@@ -143,14 +143,15 @@ class CodingalReviewer:
             self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
             self.driver.execute_script("arguments[0].click();", element)
             time.sleep(1)
-            self.send_review_tracker_update("Analyzing Project")
-            
+
             student_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Submitted by')]/preceding-sibling::p")))
             student_name = student_name_elem.text
+
+            self.send_review_tracker_update(f"Analyzing Project for {student_name}")
             
             lesson_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(text(), 'Lesson')]")))
             lesson_name = lesson_name_elem.text
-           
+            
             review_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Review now')]")))
             review_btn.click()
             time.sleep(0.5)
@@ -158,14 +159,14 @@ class CodingalReviewer:
             textarea = self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "textarea")))
             review = self.generate_review(student_name, lesson_name)
             textarea.send_keys(review)
-            self.send_review_tracker_update("Generating Review ")
+            self.send_review_tracker_update(f"Generating Review for {lesson_name}")
             try:
                 enhance_btn = self.wait.until(EC.element_to_be_clickable((By.XPATH,"//button[.//span[text()='Enhance with AI']]")))
                 enhance_btn.click()
                 time.sleep(3)
             except Exception:
                 pass
-            self.send_review_tracker_update("Analyzing Rating for the Project")
+            self.send_review_tracker_update("Analyzing Rating")
             stars = self.wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "rating-star")))
             given_stars = random.choice([3,4])  # zero-based index; clicks 4th or 5th star
             stars[given_stars].click()
