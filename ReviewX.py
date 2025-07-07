@@ -80,7 +80,7 @@ class CodingalReviewer:
             
             self.update(f"Login Successful! Hello {teacher_name}")
         except Exception as e:
-            self.update(f"Error During Login: Please Check Your Credentials Again.")
+            self.update(f"Error During Login: Please Check Your Credentials Again.{e}")
             self.update("Please Cancel & Try Again!")
     
     def pending_project_count(self):
