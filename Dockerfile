@@ -1,26 +1,36 @@
-# Use official Python image
 FROM python:3.10-slim
 
-# Set working directory
-WORKDIR /app
-
-# Copy all project files
-COPY . /app
-
 # Install system dependencies
-RUN apt-get update && \
-    apt-get install -y wget curl unzip gnupg && \
-    apt-get install -y chromium chromium-driver && \
-    pip install --upgrade pip
+RUN apt-get update && apt-get install -y \
+    chromium-driver \
+    chromium \
+    curl \
+    unzip \
+    gnupg \
+    wget \
+    fonts-liberation \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    libdrm2 \
+    libgbm1 \
+    libx11-xcb1 \
+    --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV CHROME_BIN=/usr/bin/chromium
+ENV PATH=$PATH:/usr/bin/chromium
 
 # Install Python dependencies
-RUN pip install flask flask-socketio eventlet selenium
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Set environment variable for headless Chrome
-ENV CHROME_BIN=/usr/bin/chromium
+# Copy your code
+COPY . .
 
-# Expose Flask port
-EXPOSE 5000
-
-# Run the app
-CMD ["python", "App_V2.py"]
+# Run your script
+CMD ["python", "main.py"]
