@@ -25,7 +25,7 @@
 
     <div
       id="review_tracker"
-      class="fixed top-28 w-full max-w-md h-12 bg-gray-900 rounded-full overflow-hidden relative mx-auto shadow-lg border border-gray-700 opacity-0"
+      class="fixed top-28 w-full max-w-xl h-12 bg-gray-900 rounded-full overflow-hidden relative mx-auto shadow-lg border border-gray-700 opacity-0"
     >
       <!-- Progress Bar with dashed animation on the right edge -->
       <div
@@ -37,7 +37,7 @@
       <!-- Centered Text -->
       <div
         id="review_tracker_text"
-        class="absolute inset-0 flex items-center justify-center z-10 text-white font-extrabold text-lg select-none"
+        class="absolute inset-0 flex items-center justify-center z-10 text-white font-semibold select-none"
       ></div>
     </div>
 
@@ -205,8 +205,12 @@
 
       // Review Code
       Review_btn.addEventListener("click", () => {
+        
         const number = document.getElementById("number").value;
         const password = document.getElementById("password").value;
+
+        Review_btn.disabled = true;
+        Review_btn.classList.add("opacity-50", "cursor-not-allowed");
 
         if (!number || !password) {
           showToast("⚠️ Please fill in both fields.");
@@ -268,6 +272,10 @@
 
       // Cancel Code
       Cancel_btn.addEventListener("click", () => {
+
+        Review_btn.disabled = false;
+        Review_btn.classList.remove("opacity-50", "cursor-not-allowed");
+
         socket.emit("Cancel_Review",{session_id});
         tracker.classList.add("opacity-0");
         tracker.classList.remove("opacity-100");

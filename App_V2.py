@@ -23,6 +23,7 @@ def home():
 @socketio.on('start_review')
 def handle_review(data):
     session_id = data.get("session_id")
+    print(session_id)
     number = data.get("number")
     password = data.get("password")
 
