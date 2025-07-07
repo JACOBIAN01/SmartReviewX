@@ -11,18 +11,14 @@ SmartReviewX is a smart automation tool designed to help Codingal educators stre
 - 📊 Live review tracking with Socket.IO
 - 👤 Displays reviewer profile information and pending project count
 - 🧼 Review cancel feature and real-time updates
-- ⚡ Clean and modern single-page frontend with `index.html`
-
+- ⚡ Clean and modern single-page frontend 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** HTML + JavaScript (served via Flask)
+- **Frontend:** HTML+Tailwind CSS + JavaScript (served via Flask)
 - **Backend:** Python + Flask + Flask-SocketIO
 - **Automation:** Selenium WebDriver (headless Chrome)
 - **Server:** Flask with Eventlet for async support
 
 ---
-
-## 📂 Project Structure
-
