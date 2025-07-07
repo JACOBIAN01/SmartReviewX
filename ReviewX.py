@@ -41,26 +41,26 @@ class CodingalReviewer:
     
     def login(self):
         try:
-            self.update("Logging in with your credentials...")
+            self.update("Opening Codingal Website...")
             self.driver.get("https://www.codingal.com/")
             time.sleep(1)
-            
+            self.update("Finding Login Button..")
             login_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Login']")))
             login_button.click()
-            time.sleep(0.5)
-            
+            time.sleep(1)
+            self.update("Login Button Found. Trying to enter Phone Number")
             phone_input = self.wait.until(EC.presence_of_element_located((By.NAME, "phone")))
             phone_input.send_keys(self.number)
-            time.sleep(0.5)
-            
+            time.sleep(1)
+            self.update("Finding Login with Password Button")
             login_btn_1 = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]")))
             login_btn_1.click()
             time.sleep(0.5)
-            
+            self.update("Entering Password")
             password_input = self.wait.until(EC.element_to_be_clickable((By.NAME, "password")))
             password_input.send_keys(self.password)
             time.sleep(0.5)
-            
+            self.update("Login Button Cicked!")
             login_btn_2 = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]")))
             login_btn_2.click()
             time.sleep(1)
@@ -69,7 +69,7 @@ class CodingalReviewer:
             
             profile_pic = self.wait.until(EC.presence_of_element_located((By.XPATH, "//img[@alt='Profile Image']")))
             profile_pic_src = profile_pic.get_attribute("src")
-            time.sleep(0.25)
+            time.sleep(0.5)
             
             teacher_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'flex-col')]/h2")))
             teacher_name = teacher_name_elem.text
@@ -184,12 +184,16 @@ class CodingalReviewer:
 
     def start_review(self):
         chrome_options = Options()
+        chrome_options = Options()
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920,1080")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+        chrome_options.add_argument("--remote-debugging-port=9222")
+
         self.driver = webdriver.Chrome(options=chrome_options)
         self.wait = WebDriverWait(self.driver, 10)
         
