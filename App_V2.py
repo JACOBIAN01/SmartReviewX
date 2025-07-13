@@ -23,7 +23,6 @@ def home():
 @socketio.on('start_review')
 def handle_review(data):
     session_id = data.get("session_id")
-    print(session_id)
     number = data.get("number")
     password = data.get("password")
 
@@ -70,5 +69,4 @@ def handle_cancel(data):
         socketio.emit("review_update", "⚠️ No active review to cancel.",room=session_id)
 
 if __name__ == '__main__':
-    print("http://127.0.0.1:5000/")
     socketio.run(app, host='0.0.0.0', port=5000, debug=False)
