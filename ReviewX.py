@@ -70,14 +70,13 @@ class CodingalReviewer:
             profile_pic = self.wait.until(EC.presence_of_element_located((By.XPATH, "//img[@alt='Profile Image']")))
             profile_pic_src = profile_pic.get_attribute("src")
             time.sleep(0.5)
-            
+            self.update("Profile Pic Collected...")
             teacher_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'flex-col')]/h2")))
             teacher_name = teacher_name_elem.text
             time.sleep(0.25)
-            
+            self.update("Name identified..")
             self.store_user_details(profile_pic_src, teacher_name)
             time.sleep(0.25)
-            
             self.update(f"Login Successful! Hello {teacher_name}")
         except Exception as e:
             self.update(f"Error During Login: Please Check Your Credentials Again.{e}")
