@@ -40,73 +40,48 @@ class CodingalReviewer:
         self.review_cancel = True
     
     def login(self):
-        import traceback
         try:
-            self.update("🚀 Opening Codingal Website...")
+            self.update("Opening Codingal Website...")
             self.driver.get("https://www.codingal.com/")
-            self.update(f"🌐 Page loaded: {self.driver.title}")
-            time.sleep(1.5)
-
-        # Step 1: Find and click Login button
-            self.update("🔍 Looking for Login button...")
-            try:
-                login_button = self.wait.until(
-                EC.element_to_be_clickable((By.XPATH, "//button[text()='Login']"))
-                )
-                login_button.click()
-                self.update("✅ Login button clicked.")
-            except Exception:
-                self.update("❌ Login button not found. Possibly UI changed or blocked.")
-                return
-
             time.sleep(1)
-
-            # Step 2: Enter Phone Number
-            self.update("📱 Entering Phone Number...")
+            self.update("Finding Login Button..")
+            login_button = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Login']")))
+            login_button.click()
+            time.sleep(1)
+            self.update("Login Button Found. Trying to enter Phone Number")
             phone_input = self.wait.until(EC.presence_of_element_located((By.NAME, "phone")))
-            phone_input.clear()
             phone_input.send_keys(self.number)
+            time.sleep(1)
+            self.update("Finding Login with Password Button")
+            login_btn_1 = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]")))
+            login_btn_1.click()
             time.sleep(0.5)
-
-            # Step 3: Click "Login with password"
-            self.update("🔐 Clicking 'Login with password'...")
-            login_with_pass = self.wait.until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]"))
-                )
-            login_with_pass.click()
-            time.sleep(0.5)
-
-            # Step 4: Enter password
-            self.update("🔑 Entering password...")
+            self.update("Entering Password")
             password_input = self.wait.until(EC.element_to_be_clickable((By.NAME, "password")))
-            password_input.clear()
             password_input.send_keys(self.password)
             time.sleep(0.5)
+            self.update("Login Button Cicked!")
+            login_btn_2 = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]")))
+            login_btn_2.click()
+            time.sleep(1)
 
-            # Step 5: Final login click
-            self.update("➡️ Submitting login form...")
-            final_login_btn = self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Login with password')]"))
-                )
-            final_login_btn.click()
-            time.sleep(1.5)
-
-        # Step 6: Wait for Dashboard (Profile)
-            self.update("🧠 Waiting for dashboard/profile to load...")
+            self.update("Opening Your Dashboard...")
+            
             profile_pic = self.wait.until(EC.presence_of_element_located((By.XPATH, "//img[@alt='Profile Image']")))
             profile_pic_src = profile_pic.get_attribute("src")
-
+            time.sleep(0.5)
+            self.update("Profile Pic Collected...")
             teacher_name_elem = self.wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'flex-col')]/h2")))
             teacher_name = teacher_name_elem.text
-
+            time.sleep(0.25)
+            self.update("Name Identified...")
             self.store_user_details(profile_pic_src, teacher_name)
-            self.update(f"✅ Login Successful! Hello {teacher_name}")
-
+            time.sleep(0.25)
+            
+            self.update(f"Login Successful! Hello {teacher_name}")
         except Exception as e:
-            error_msg = traceback.format_exc()
-            self.update(f"❌ Login Failed: {str(e)}\n{error_msg}")
-            self.update("⚠️ Please Cancel & Try Again!")
-
+            self.update(f"Error During Login: Please Check Your Credentials Again.{e}")
+            self.update("Please Cancel & Try Again!")
     
     def pending_project_count(self):
         self.driver.get("https://www.codingal.com/teacher/dashboard/projects/")
@@ -208,8 +183,8 @@ class CodingalReviewer:
             self.update(f"Error during review")
 
     def start_review(self):
-
-        # === Step 2: Configure Chrome options
+        from webdriver_manager.chrome import ChromeDriverManager
+        from selenium.webdriver.chrome.service import Service
         chrome_options = Options()
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--disable-gpu")
@@ -218,15 +193,11 @@ class CodingalReviewer:
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-        chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+        chrome_options.add_argument("--remote-debugging-port=9222")
 
-        try:
-            self.driver = webdriver.Chrome( options=chrome_options)
-            self.wait = WebDriverWait(self.driver, 10)
-            self.update("✅Chrome started successfully.")
-        except Exception as e:
-            self.update(f"❌ Failed to start Chrome: {str(e)}")
-            return
+        service = Service(ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+        self.wait = WebDriverWait(self.driver, 10)
         
         self.login()
         self.review_cancel = False
