@@ -183,9 +183,10 @@ class CodingalReviewer:
             self.update(f"Error during review")
 
     def start_review(self):
+        from webdriver_manager.chrome import ChromeDriverManager
         from selenium.webdriver.chrome.service import Service
         chrome_options = Options()
-        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920,1080")
@@ -193,8 +194,9 @@ class CodingalReviewer:
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
         chrome_options.add_argument("--remote-debugging-port=9222")
-      
-        service = Service("/usr/bin/chromedriver")
+        chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)...")
+
+        service = Service(ChromeDriverManager().install())
         self.driver = webdriver.Chrome(service=service, options=chrome_options)
         self.wait = WebDriverWait(self.driver, 10)
         
