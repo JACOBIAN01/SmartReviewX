@@ -66,7 +66,7 @@ class CodingalReviewer:
             time.sleep(1)
 
             self.update("Opening Your Dashboard...")
-            
+            time.sleep(3)
             profile_pic = self.wait.until(EC.presence_of_element_located((By.XPATH, "//img[@alt='Profile Image']")))
             profile_pic_src = profile_pic.get_attribute("src")
             time.sleep(0.5)
