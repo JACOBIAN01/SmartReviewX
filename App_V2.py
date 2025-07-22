@@ -69,4 +69,5 @@ def handle_cancel(data):
         socketio.emit("review_update", "⚠️ No active review to cancel.",room=session_id)
 
 if __name__ == '__main__':
+    print("http://localhost:5000/")
     socketio.run(app, host='0.0.0.0', port=5000, debug=False)
