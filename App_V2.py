@@ -6,15 +6,13 @@ from ReviewX import CodingalReviewer
 import time
 
 
-#Session_id -> reviewer instance
+#Session_id -> reviewer instance -> Handle Multiple User
 sessions = {}
 
 app = Flask(__name__, template_folder="templates")
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Global reviewer instance - only one review session at a time
-reviewer = None
 
 @app.route("/")
 def home():
